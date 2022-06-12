@@ -7,7 +7,7 @@ def get_google_images():
         # "api_key": os.environ.get("SERPAPI_KEY"),
         "api_key": "SERPAPI_KEY",
         "engine": "google",
-        "q": "pointing left hand gesture",
+        "q": "Cat",
         "tbm": "isch",
         "ijn": 0
     }
