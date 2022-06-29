@@ -1,13 +1,15 @@
-import os, urllib.request, json  # json for pretty output
+import os, json  # json for pretty output
 from serpapi import GoogleSearch
-
+import requests
 
 def get_google_images():
     params = {
-        "api_key": os.environ.get("SERPAPI_KEY"),
+        # "api_key": os.environ.get("SERPAPI_KEY"),
+        "api_key": "SERPAPI_KEY",
         "engine": "google",
         "q": "Cat",
         "tbm": "isch",
+        "ijn": 0
     }
 
     search = GoogleSearch(params)
@@ -21,23 +23,23 @@ def get_google_images():
 
     # -----------------------
     # Downloading images
+    headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
 
     for index, image in enumerate(results["images_results"]):
 
-        print(f"Downloading {index} image...")
+        try:
+            print(f"Downloading {index} image...")
 
-        opener = urllib.request.build_opener()
-        opener.addheaders = [
-            (
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582",
-            )
-        ]
-        urllib.request.install_opener(opener)
-        # filepath is current working directory + SerpApi_Images + params["q"] + index + .jpg
-        filepath = os.path.join("./SerpApi_Images/", params["q"] + str(index) + ".jpg")
+            # filepath is current working directory + SerpApi_Images + params["q"] + index + .jpg
+            filepath = os.path.join("./SerpApi_Images/", params["q"] + str(index) + ".jpg")
 
-        urllib.request.urlretrieve(image["original"], filepath)
+            response = requests.get(image['original'], headers=headers).content
+            with open(filepath, "wb") as f:
+                f.write(response)
 
+        except Exception as e:
+            print(e)
+            print(f"Error downloading {index} image. Error =", e)
 
 get_google_images()
